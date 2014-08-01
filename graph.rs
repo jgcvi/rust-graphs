@@ -1,11 +1,31 @@
-extern crate regex;
-use regex::Regex;
-use std::num::{abs,FloatMath::arcsin};
-pub struct Point (f32, f32);
+use std::num::{abs,FloatMath};
+
+pub struct Point (pub f32, pub f32);
 
 pub struct Node {
-	id: int,
-	point: Point,
+	pub id: int,
+	pub point: Point,
+}
+
+impl Point {
+	/*--------------------------------------------------------------------------------------
+	 |	Method:		
+	 |
+	 |	Purpose:	
+	 |
+	 |	Pre-Cond:	
+	 |
+	 |	Post-Cond:
+	 |
+	 |	Parameters:
+	 |
+	 |	Returns:
+	 |
+	 `-------------------------------------------------------------------------------------*/
+	pub fn shiftPoint(mut self, dist: f32, angle: f32) {
+		let Point(x,y) = self;
+		self = Point(x + angle.cos() * dist, y + angle.sin() * dist);
+	}
 }
 
 impl Node {
@@ -18,21 +38,11 @@ impl Node {
 	}
 }
 
-fn dist(pt1:Point, pt2:Point) -> f32 {
-	let Point(x1, y1) = pt1;
-	let Point(x2, y2) = pt2;
-
-	let x_dist = abs(x2-x1);
-	let y_dist = abs(y2-y1);
-
-	return (x_dist*x_dist + y_dist*y_dist).sqrt();
-}
-
 pub struct Graph {
-	node_list: Vec<Node>,
-	visited_list: Vec<int>,
-	unvisited_list: Vec<int>,
-	size: int,
+	pub node_list: Vec<Node>,
+	pub visited_list: Vec<int>,
+	pub unvisited_list: Vec<int>,
+	pub size: int,
 }
 
 impl Graph {
@@ -73,7 +83,17 @@ impl Graph {
 	}
 }
 
-fn convert(pt: &str) -> f32 {
+pub fn dist(pt1:Point, pt2:Point) -> f32 {
+	let Point(x1, y1) = pt1;
+	let Point(x2, y2) = pt2;
+
+	let x_dist = abs(x2-x1);
+	let y_dist = abs(y2-y1);
+
+	return (x_dist*x_dist + y_dist*y_dist).sqrt();
+}
+
+pub fn convert(pt: &str) -> f32 {
 	let convert: Option<f32> = from_str(pt.as_slice().trim());
 
 	let ret = match convert
@@ -95,7 +115,7 @@ pub fn getAngle(pt1: Point, pt2: Point) -> f32 {
 
 	let ratio = abs(x2-x1) / dist(pt1, pt2);
 
-	return ratio.arcsin();
+	return ratio.asin();
 }
 
 fn main() {}

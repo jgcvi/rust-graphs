@@ -4,7 +4,7 @@ extern crate regex;
 extern crate collections;
 use regex::Regex;
 use std::vec::Vec;
-use graph::{Point,Node,Graph, createPoint};
+use graph::{Point,Node,Graph, createPoint, getAngle, dist};
 use regex::Regex;
 use std::io::fs::File;
 use std::io::BufferedReader;
@@ -116,18 +116,17 @@ fn euclidean(graph: Graph, node: int) -> Vec<Node> {
  |	Returns:	Vec<Point>:	a vector of the points, post spread
  |
  `-------------------------------------------------------------------------------------*/
-
 fn spreadGraph(graph: Graph) -> Vec<Point>{
-	let points: Vec<Point>;
-	let mut max_x: f32 = -0xFFFFFFFF;
-	let mut min_x: f32 = 0xFFFFFFFF;
-	let mut max_y: f32 = -0xFFFFFFFF;
-	let mut min_y: f32 = 0xFFFFFFFF;
+	let mut points: Vec<Point> = Vec::with_capacity(graph.size as uint);
+	let mut max_x: f32 = -4294967295_f32;
+	let mut min_x: f32 = 4294967295_f32;
+	let mut max_y: f32 = -4294967295_f32;
+	let mut min_y: f32 = 4294967295_f32;
 
 	for node in graph.node_list.iter()
 	{
-		let Point(x,y) = node;
-		points.push(node);
+		let Point(x,y) = node.point;
+		points.push(node.point);
 
 		if x > max_x
 		{
@@ -146,38 +145,22 @@ fn spreadGraph(graph: Graph) -> Vec<Point>{
 		}
 	}
 
-	let max_radius = SOMETHING;
+	let max_radius = (max_x - min_x / graph.size as f32) + 
+					(max_y - min_y / graph.size as f32);
 	for point1 in points.iter()
 	{
-		let radius = rand::random() * max_radius;
+		let radius = rand::random::<f32>() * max_radius;
 		for point2 in points.iter() 
 		{
-			let dist = point1.distance(point2);
-			if dist
+			let dist = dist(*point1, *point2);
+			if dist < radius
 			{
-
-				shiftPoint(point2, dist, getAngle(point1, point2));
+				point2.shiftPoint(dist, getAngle(*point1, *point2));
 			}
 		}
 	}
-}
 
- /*--------------------------------------------------------------------------------------
- |	Method:		
- |
- |	Purpose:	
- |
- |	Pre-Cond:	
- |
- |	Post-Cond:
- |
- |	Parameters:
- |
- |	Returns:
- |
- `-------------------------------------------------------------------------------------*/
-fn shiftPoint(pt: Point, dist: f32) {
-
+	return points;
 }
 
  /*--------------------------------------------------------------------------------------
